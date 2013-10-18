@@ -2,54 +2,56 @@ module.exports = (grunt) ->
   async = require("async")
   spawn = require('child_process').spawn
   growl = require('growl')
-  criteria = require "./criteria.coffee"
-  common = criteria.util()
-  resolutionsToTest = require "./casperResolutions"
-  userAgents = require "./casperUserAgents"
-  userAgentsToTest = userAgents.get()
+  config = (require "./config/config.coffee").init()
+  common = new config()
   script = 'casperjs.bat'
+  workList = []
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
 
   # Configure Grunt
   grunt.initConfig
-    clean: ["RESULTS_SUCCESS","RESULTS_FAILED"]
+    clean: [common.dirSuccess,common.dirFailure]
   grunt.registerTask 'testAcceptanceCriteria', 'RUN ALL CRITERIA', () ->
     run this.async()
 
   grunt.registerTask 'default', ['clean','testAcceptanceCriteria']
 
-  setupWork = (cb) ->
-    workList = []
+  setupWork = (deviceType, cb) ->
     for scenario of common.criteriaList
       i = 0
-      while i < resolutionsToTest.list.length
-        for userAgentType of userAgentsToTest
-          args = ['casperTestRunner.coffee', scenario, resolutionsToTest.list[i][0], resolutionsToTest.list[i][1]]
+
+      while i < common.resolutions[deviceType].list.length
+        for userAgentType of common.userAgents[deviceType]
+          args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0], common.resolutions[deviceType].list[i][1]]
+
           # pass type of device or browser
           args.push userAgentType
           # pass actual userAgent string
-          args.push userAgentsToTest[userAgentType]
-          console.log args
+          args.push  common.userAgents[deviceType][userAgentType]
           workList.push async.apply(cmd, script, args, cb)
         i++
-    workList
 
   run = (cb) ->
     cnt = 0
     startTime = Date.now()
     callback = (err, results) ->
       cnt = cnt + 1
-      if cnt == (Object.keys(common.criteriaList).length  * resolutionsToTest.list.length)
+      console.log cnt
+      console.log workList.length
+      if cnt == workList.length
         endTime = Date.now()
         console.log script + ' COMPLETED for all criteria in : ' + ((endTime - startTime) / 1000).toFixed(3).toString() + ' seconds'
         cb()
-    workList = setupWork(callback)
+
+    setupWork('phone',callback) if common.resolutions['phone'].active
+    setupWork('tablet',callback) if common.resolutions.tablet.active
+    setupWork('desktop',callback) if common.resolutions.desktop.active
+
     async.parallel workList,
       callback
 
   cmd = (script, args, callback) ->
-    console.log(args)
     cmdProcess = spawn(script, args)
     cmdProcess.stdout.on "data", (data) ->
       msg = "" + data

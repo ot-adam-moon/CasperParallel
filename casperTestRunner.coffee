@@ -3,42 +3,41 @@ require = patchRequire global.require
 casper = require("casper").create
   verbose: true
   logLevel: "error"
-criteria = require "./criteria.coffee"
-common = criteria.util()
+  waitTimeout: 20000
+config =  (require "./config/config.coffee").init()
+common = new config()
 url = common.url
-successDir = "RESULTS_SUCCESS"
-failedDir = "RESULTS_FAILED"
 scenario = casper.cli.get(0)
-width = casper.cli.get(1)
-height = casper.cli.get(2)
-userAgentType = casper.cli.get(3)
-userAgentString = casper.cli.get(4)
+deviceType = casper.cli.get(1)
+width = casper.cli.get(2)
+height = casper.cli.get(3)
+userAgentType = casper.cli.get(4)
+userAgentString = casper.cli.get(5)
+console.log userAgentType + '-' + userAgentString
 steps = common.criteriaList[scenario]
-ACfilename = scenario + "/" + userAgentType + "/STEP-{step}" + width + "-" + height+ '.png'
-FPfilename = scenario + "/" + userAgentType + "/STEP-{step}" + "-" + width + "-" + height + "-" + "fullPage"+ '.png'
-
+ACfilename = common.setupScreenShotPath scenario, deviceType, userAgentType, width, height, false
+FPfilename = common.setupScreenShotPath scenario, deviceType, userAgentType, width, height, true
 
 #set the userAgent from argument passed in
-casper.options.waitTimeout = 5000
 casper.userAgent userAgentString  if userAgentString
 
 pass = (c, step)->
-  c.capture successDir + "/" + ACfilename.replace(/\{step\}/, currentStep+'-'+step),
+  c.capture common.dirSuccess  + ACfilename.replace(/{step}/g, currentStep+'-'+step),
     top: 0
     left: 0
     width: width
     height: height
-  c.captureSelector successDir + "/" + FPfilename.replace(/{step}/g, currentStep+'-'+step), 'body'
+  c.captureSelector common.dirSuccess + FPfilename.replace(/{step}/g, currentStep+'-'+step), 'body'
   common.logWithTime(scenario, step, ' snapshot taken after pass')
   runSteps c
 
 fail = (c, step) ->
-  c.capture failedDir + "/" + ACfilename.replace(/{step}/g, currentStep+'-'+step) ,
+  c.capture common.dirFailure + ACfilename.replace(/{step}/g, currentStep+'-'+step) ,
     top: 0
     left: 0
     width: width
     height: height
-  c.captureSelector failedDir + "/" + FPfilename.replace(/\{step\}/, currentStep+'-'+step), 'body'
+  c.captureSelector common.dirFailure   + FPfilename.replace(/\{step\}/, currentStep+'-'+step), 'body'
   common.logWithTime(scenario, step, ' snapshot taken after failure');
 
 currentStep = 0
@@ -59,7 +58,12 @@ casper.start url
 casper.then ->
   @viewport width, height
 
-casper.run runSteps casper
+casper.then ->
+  runSteps casper
+
+casper.run ->
+  @echo("Finished captures for " + url).exit()
+
 
 
 

@@ -73,5 +73,4 @@ OneTechnologies.Clients.MemberPortal/Content/js/app/googleMaps.js
 *main.min.js
 *configSettings.js
 *.js.html
-RESULTS_SUCCESS/
-RESULTS_FAILED/
+*.png
