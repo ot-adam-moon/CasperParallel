@@ -15,14 +15,15 @@ Setup
 * Install [Growl for Windows](http://www.growlforwindows.com/gfw/) *Note: THIS IS OPTIONAL
 * `git clone git@github.com:ot-adam-moon/CasperParallel.git`
 * `npm install .`
-* `grunt`  *NOTE: this will run `git status` for all projects
+* Download latest [casperjs](http://casperjs.org/) zip
+* Add to batchbin dir to PATH Environment Variable *Ex: E:\casperjs\batchbin;
+* `grunt`
 
-
-Run a task for all projects and current branch
+Run all casper js scripts in parallel
 ----------------------------------------------
 
- grunt {task}
-
+ grunt
+ 
 Command List
 ------------
 
