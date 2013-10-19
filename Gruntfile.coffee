@@ -4,7 +4,6 @@ module.exports = (grunt) ->
   growl = require('growl')
   config = (require "./config/config.coffee").init()
   common = new config()
-  script = 'casperjs.bat'
   workList = []
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
@@ -29,7 +28,7 @@ module.exports = (grunt) ->
           args.push userAgentType
           # pass actual userAgent string
           args.push  common.userAgents[deviceType][userAgentType]
-          workList.push async.apply(cmd, script, args, cb)
+          workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
         i++
 
   run = (cb) ->
@@ -41,7 +40,7 @@ module.exports = (grunt) ->
       console.log workList.length
       if cnt == workList.length
         endTime = Date.now()
-        console.log script + ' COMPLETED for all criteria in : ' + ((endTime - startTime) / 1000).toFixed(3).toString() + ' seconds'
+        console.log common.getCasperJsExec() + ' COMPLETED for all criteria in : ' + ((endTime - startTime) / 1000).toFixed(3).toString() + ' seconds'
         cb()
 
     setupWork('phone',callback) if common.resolutions['phone'].active

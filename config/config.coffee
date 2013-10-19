@@ -1,5 +1,6 @@
 exports.init = ->
   common = ->
+
 #   config properties
     @url = 'http://google.com'
     @dirSuccess = "RESULTS_SUCCESS/"
@@ -26,6 +27,9 @@ exports.init = ->
         .replace('{height}', height)
       path
 
+    @getCasperJsExec = () ->
+      os = require('os')
+      if os.platform() is 'win32' then "casperjs.bat" else "casperjs"
     @logWithTime = (scenario, step, action) ->
       timeStamp = new Date()
       console.log  'SCENARIO: ' + scenario + ' -> ' + timeStamp + " : " + action + ' in the step ' + step
