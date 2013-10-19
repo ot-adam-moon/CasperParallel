@@ -16,7 +16,7 @@ Setup
 * `git clone git@github.com:ot-adam-moon/CasperParallel.git`
 * `npm install .`
 * Download latest [casperjs](http://casperjs.org/) zip
-* Add to batchbin dir to PATH Environment Variable *Ex: E:\casperjs\batchbin;
+* Add batchbin dir to PATH Environment Variable *Ex: E:\casperjs\batchbin;
 * `grunt`
 
 Run all casper js scripts in parallel
