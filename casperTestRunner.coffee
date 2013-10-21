@@ -14,7 +14,17 @@ height = casper.cli.get(3)
 userAgentType = casper.cli.get(4)
 userAgentString = casper.cli.get(5)
 console.log userAgentType + '-' + userAgentString
-steps = common.criteriaList[scenario]
+steps = []
+for st in common.criteriaList[scenario]
+  do (st) ->
+    console.log st
+    if common.criteriaList[st] and common.criteriaList[st].length > 1
+      for nestedStep in common.criteriaList[st]
+        do(nestedStep) ->
+          steps.push nestedStep
+    else
+      steps.push st
+
 ACfilename = common.setupScreenShotPath scenario, deviceType, userAgentType, width, height, false
 FPfilename = common.setupScreenShotPath scenario, deviceType, userAgentType, width, height, true
 
@@ -37,7 +47,7 @@ fail = (c, step) ->
     left: 0
     width: width
     height: height
-  c.captureSelector common.dirFailure   + FPfilename.replace(/\{step\}/, currentStep+'-'+step), 'body'
+  c.captureSelector common.dirFailure + FPfilename.replace(/\{step\}/, currentStep+'-'+step), 'body'
   common.logWithTime(scenario, step, ' snapshot taken after failure');
 
 currentStep = 0

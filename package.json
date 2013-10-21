@@ -5,6 +5,7 @@
     "growl": "latest",
     "grunt": "latest",
     "async" : "latest",
+    "lodash" : "latest",
     "grunt-contrib-clean": "latest"
   },
     "scripts": {
