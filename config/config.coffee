@@ -5,8 +5,8 @@ exports.init = ->
     @url = 'http://google.com'
     @dirSuccess = "RESULTS_SUCCESS/"
     @dirFailure = "RESULTS_FAILURE/"
-    @dirScreenshotViewPort = '{scenario}/{deviceType}/{userAgentType}/STEP-{step}-{width}-{height}.png'
-    @dirScreenshotFullPage = '{scenario}/{deviceType}/{userAgentType}/FULLPAGE-STEP-{step}-{width}-{height}.png'
+    @dirScreenshotViewPort = '{scenario}/{deviceType}/{userAgentType}/{width}-{height}-STEP-{step}.png'
+    @dirScreenshotFullPage = '{scenario}/{deviceType}/{userAgentType}/FULLPAGE-{width}-{height}-STEP-{step}.png'
     self = @
 
 #    set criteria list
@@ -32,7 +32,7 @@ exports.init = ->
       if os.platform() is 'win32' then "casperjs.bat" else "casperjs"
     @logWithTime = (scenario, step, action) ->
       timeStamp = new Date()
-      console.log  'SCENARIO: ' + scenario + ' -> ' + timeStamp + " : " + action + ' in the step ' + step
+#      console.log  'SCENARIO: ' + scenario + ' -> ' + timeStamp + " : " + action + ' in the step ' + step
       timeStamp
 
     @logTimeToComplete = (scenario, step, start) ->

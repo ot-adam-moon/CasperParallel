@@ -1,7 +1,7 @@
 require = patchRequire global.require
-
+x = require('casper').selectXPath
 casper = require("casper").create
-  verbose: true
+  verbose: false
   logLevel: "error"
   waitTimeout: 20000
 config =  (require "./config/config.coffee").init()
@@ -15,21 +15,28 @@ userAgentType = casper.cli.get(4)
 userAgentString = casper.cli.get(5)
 console.log userAgentType + '-' + userAgentString
 steps = []
-for st in common.criteriaList[scenario]
-  do (st) ->
-    console.log st
-    if common.criteriaList[st] and common.criteriaList[st].length > 1
-      for nestedStep in common.criteriaList[st]
-        do(nestedStep) ->
-          steps.push nestedStep
+
+buildSteps = (scenario) ->
+  for st in common.criteriaList[scenario].steps
+    if common.criteriaList[st] and common.criteriaList[st].steps.length > 1
+      buildSteps st
     else
       steps.push st
+
+buildSteps(scenario)
+
+console.log scenario + ': ' + steps
 
 ACfilename = common.setupScreenShotPath scenario, deviceType, userAgentType, width, height, false
 FPfilename = common.setupScreenShotPath scenario, deviceType, userAgentType, width, height, true
 
 #set the userAgent from argument passed in
 casper.userAgent userAgentString  if userAgentString
+
+casper.show = (selector) ->
+  @evaluate ((selector) ->
+    document.querySelector(selector).style.display = "block !important;"
+  ), selector
 
 pass = (c, step)->
   c.capture common.dirSuccess  + ACfilename.replace(/{step}/g, currentStep+'-'+step),
@@ -57,11 +64,10 @@ runSteps = (c) ->
     step = steps[currentStep]
     stepToRun = require("./scenarios/" + step + '.js')
     common.logWithTime(scenario, currentStep+1, ' run');
-    stepToRun.run c, scenario, step, common, pass, fail
+    stepToRun.run c, scenario, step, common, pass, fail, x
     currentStep++
   else
     common.logWithTime('Run All Steps', 'Done', 'Exit()');
-    c.exit()
 
 casper.start url
 

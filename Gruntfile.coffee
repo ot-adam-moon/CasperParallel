@@ -3,7 +3,7 @@ module.exports = (grunt) ->
   spawn = require('child_process').spawn
   growl = require('growl')
   config = (require "./config/config.coffee").init()
-  common = new config()
+  !common = new config()
   workList = []
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
@@ -18,18 +18,18 @@ module.exports = (grunt) ->
 
   setupWork = (deviceType, cb) ->
     for scenario of common.criteriaList
-      i = 0
+      if common.criteriaList[scenario].forDeviceType is deviceType or !common.criteriaList[scenario].forDeviceType
+        i = 0
+        while i < common.resolutions[deviceType].list.length
+          for userAgentType of common.userAgents[deviceType]
+            args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0], common.resolutions[deviceType].list[i][1]]
 
-      while i < common.resolutions[deviceType].list.length
-        for userAgentType of common.userAgents[deviceType]
-          args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0], common.resolutions[deviceType].list[i][1]]
-
-          # pass type of device or browser
-          args.push userAgentType
-          # pass actual userAgent string
-          args.push  common.userAgents[deviceType][userAgentType]
-          workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
-        i++
+            # pass type of device or browser
+            args.push userAgentType
+            # pass actual userAgent string
+            args.push  common.userAgents[deviceType][userAgentType]
+            workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
+          i++
 
   run = (cb) ->
     cnt = 0
@@ -61,7 +61,7 @@ module.exports = (grunt) ->
       grunt.log.write msg
 
     cmdProcess.on "exit", (code) ->
-      msg = ' COMPLETED  scenario: ' + args[1]  + ' userAgent: ' + args[4] + ' viewport:  ' + args[2] + ' x ' + args[3] + '\n-----------------------------------\n'
+      msg = 'COMPLETED\nscenario: ' + args[1]  + '\ndeviceType: ' + args[5] + '\nviewport:  ' + args[3] + ' x ' + args[4] + '\n-----------------------------------\n'
       grunt.log.write msg
       growlMsg(msg)
       callback(null, "")

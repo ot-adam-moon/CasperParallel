@@ -4,20 +4,13 @@ exports.run = function (casper, scenario, step, c, p, t) {
     casper.waitForSelector(c.selectors.googleSearchForm,
         function () {
             casper.fill(c.selectors.googleSearchForm, { q: "bleacher report" }, true);
+            casper.then(function () {
+                c.logWithTime(scenario, step, ' about to call passed');
+                p(casper, step);
+            });
         },
         function () {
             c.logWithTime(scenario, step, ' about to call failed');
             t(casper, step);
         });
-    casper.then(function () {
-        casper.waitForSelector(c.selectors.googleSearchResultLink,
-            function () {
-                    c.logWithTime(scenario, step, ' about to call passed');
-                    p(casper, step);
-            },
-            function () {
-                c.logWithTime(scenario, step, ' about to call timeout');
-                t(casper, step);
-            });
-    });
 };

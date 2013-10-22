@@ -1,6 +1,7 @@
-exports.run = function (casper, scenario,step, c, p, t) {
+exports.run = function (casper, scenario,step, c, p, t, x) {
 
     c.logWithTime(scenario, step, ' inside run');
+
     casper.waitForSelector(c.selectors.googleSearchResultLink,
         function () {
             casper.click(c.selectors.googleSearchResultLink);
