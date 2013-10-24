@@ -29,14 +29,44 @@ Setup
 * Add batchbin dir to PATH Environment Variable *Ex: E:\casperjs\batchbin;
 * `grunt`
 
+Create you own Scenarios
+========================
+ Create a new javascript file with a title describing a step in your scenario
+ 
+    exports.run = function (casper, scenario, step, c, p, t) {
+       // casper js scripts go here
+    };
+ 
+ 
+ Example scenario step: googleSearch.js
+ 
+    exports.run = function (casper, scenario, step, c, p, t) {
+        // google search for 'bleacher report'
+        c.logWithTime(scenario, step, ' inside run');
+        casper.waitForSelector(c.selectors.googleSearchForm,
+            function () {
+                casper.fill(c.selectors.googleSearchForm, { q: "bleacher report" }, true);
+                casper.then(function () {
+                    c.logWithTime(scenario, step, ' about to call passed');
+                    p(casper, step);
+                });
+            },
+            function () {
+                c.logWithTime(scenario, step, ' about to call failed');
+                t(casper, step);
+            });
+    };
+ 
+
+
  
 Command List
 ------------
 
 | grunt command | what it does  |
 | ------------- |:-------------:|
-| `grunt` | `run all scenarios for all device types and viewports in parallel` |
-| `grunt --scenario navigateToWWEHome` | `run only scenario `navigateToWWEHome` for all viewport and useragent combinations in parallel` |
+| `grunt` |`run all scenarios for all device types and viewports in parallel` |
+| `grunt --scenario navigateToWWEHome` |`run only scenario navigateToWWEHome for all viewports and useragent combinations in parallel` |
 
 
 
