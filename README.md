@@ -6,11 +6,11 @@ Features
 =======
   * configurable list of User Agents to use for each scenario
   * configurable list of Viewports to use for each scenario
-  * build modular scenario steps the can be reused for multiple scenarios
+  * build modular scenario steps that can be reused for multiple scenarios
   * each combination of User Agent, Viewport, and Scenario run in parallel reducing time to complete suite
-  * ability to run specified scenario, viewport, and user agent with command line arguments
+  * ability to run specific combination of scenario, viewport, and user agent with command line arguments
   * separate User Agents and Viewports by device type phone, tablet and desktop
-  * at the end of each step in the scenario, a screenshot is recorded in Success or Failure
+  * at the end of each step in the scenario, a screenshot is recorded in directory `RESULTS_SUCCESS` or `RESULTS_FAILURE` to capture the state of the browser after each step
 
 Setup
 =====
