@@ -3,10 +3,6 @@ casperallel
 
 Using Node.js async module to Run [casperjs](http://casperjs.org/) Scripts in parallel.
 
-Motivation
-==========
-  *  be able to run any UI Automation Scripts against a configurable list of Viewports and UserAgents
-  *  be able to run entire suite of UI Automation Scripts in parallel
 
 Features
 =======
