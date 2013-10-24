@@ -1,4 +1,4 @@
-casperallel
+CasperParallel
 =========
 
 Using Node.js async module to Run [casperjs](http://casperjs.org/) Scripts in parallel.
