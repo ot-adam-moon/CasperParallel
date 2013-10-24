@@ -2,8 +2,6 @@ CasperParallel
 =========
 
 Using Node.js async module to Run [casperjs](http://casperjs.org/) Scripts in parallel.
-
-
 Features
 =======
   * configurable list of User Agents to use for each scenario
