@@ -1,10 +1,14 @@
 exports.init = ->
-  common = ->
+  config = ->
 
 #   config properties
     @url = 'http://google.com'
+    @verbose = true
+    @logThreshold = 'error'
+    @timeout = 30000
     @dirSuccess = "RESULTS_SUCCESS/"
     @dirFailure = "RESULTS_FAILURE/"
+    @includeFullPage = true
     @dirScreenshotViewPort = '{scenario}/{deviceType}/{userAgentType}/{width}-{height}-STEP-{step}.png'
     @dirScreenshotFullPage = '{scenario}/{deviceType}/{userAgentType}/FULLPAGE-{width}-{height}-STEP-{step}.png'
     self = @
@@ -32,7 +36,7 @@ exports.init = ->
       if os.platform() is 'win32' then "casperjs.bat" else "casperjs"
     @logWithTime = (scenario, step, action) ->
       timeStamp = new Date()
-#      console.log  'SCENARIO: ' + scenario + ' -> ' + timeStamp + " : " + action + ' in the step ' + step
+      console.log  'SCENARIO: ' + scenario + ' -> ' + timeStamp + " : " + action + ' in the step ' + step
       timeStamp
 
     @logTimeToComplete = (scenario, step, start) ->
@@ -48,4 +52,4 @@ exports.init = ->
         timeout casper, step
       return
     return
-  common
+  config

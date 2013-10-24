@@ -8,6 +8,16 @@ Motivation
   *  be able to run any UI Automation Scripts against a configurable list of Viewports and UserAgents
   *  be able to run entire suite of UI Automation Scripts in parallel
 
+Features
+=======
+  * configurable list of User Agents to use for each scenario
+  * configurable list of Viewports to use for each scenario
+  * nestable predefined scenarios to reduce verbose repeated steps
+  * each combination of User Agent, Viewport, and Scenario run in parallel reducing time to complete suite
+  * ability to run specified scenario, viewport, and user agent with command line arguments
+  * separate User Agents and Viewports by device type phone, tablet and desktop
+  * at the end of each step in the scenario, a screenshot is recorded in Success or Failure
+
 Setup
 =====
 
@@ -19,8 +29,8 @@ Setup
 * Add batchbin dir to PATH Environment Variable *Ex: E:\casperjs\batchbin;
 * `grunt`
 
-Run all casper js scripts in parallel
-----------------------------------------------
+Run all casper js ui acceptance criteria scenarios in parallel
+-----------------------------------------------------------------------------
 
  grunt
  
@@ -29,7 +39,7 @@ Command List
 
 | grunt command | what it does  |
 | ------------- |:-------------:|
-| `grunt` | `git submodule update, git pull upstream master` |
+| `grunt` | `clean RESULT folders`, `run all scenarios for all device types and viewports in parallel` |
 | `grunt default` | `git pull upstream master` |
 
 

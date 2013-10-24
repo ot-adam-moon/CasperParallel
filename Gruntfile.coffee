@@ -2,9 +2,10 @@ module.exports = (grunt) ->
   async = require("async")
   spawn = require('child_process').spawn
   growl = require('growl')
-  config = (require "./config/config.coffee").init()
-  !common = new config()
+  config = (require "./common/config.coffee").init()
+  common = new config()
   workList = []
+  argScenario = grunt.option('scenario')
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
 
@@ -17,30 +18,39 @@ module.exports = (grunt) ->
   grunt.registerTask 'default', ['clean','testAcceptanceCriteria']
 
   setupWork = (deviceType, cb) ->
-    for scenario of common.criteriaList
-      if common.criteriaList[scenario].forDeviceType is deviceType or !common.criteriaList[scenario].forDeviceType
-        i = 0
-        while i < common.resolutions[deviceType].list.length
-          for userAgentType of common.userAgents[deviceType]
-            args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0], common.resolutions[deviceType].list[i][1]]
+    if argScenario
+      setupWorkForScenario argScenario, deviceType, cb
+    else
+      for scenario of common.criteriaList
+        setupWorkForScenario scenario, deviceType, cb
 
-            # pass type of device or browser
-            args.push userAgentType
-            # pass actual userAgent string
-            args.push  common.userAgents[deviceType][userAgentType]
-            workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
-          i++
+  setupWorkForScenario = (scenario, deviceType, cb) ->
+    if common.criteriaList[scenario].forDeviceType is deviceType or !common.criteriaList[scenario].forDeviceType
+      i = 0
+      while i < common.resolutions[deviceType].list.length
+       for userAgentType of common.userAgents[deviceType]
+         args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0], common.resolutions[deviceType].list[i][1]]
+
+         # pass type of device or browser
+         args.push userAgentType
+         # pass actual userAgent string
+         args.push  common.userAgents[deviceType][userAgentType]
+         workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
+       i++
+
 
   run = (cb) ->
     cnt = 0
     startTime = Date.now()
     callback = (err, results) ->
       cnt = cnt + 1
-      console.log cnt
-      console.log workList.length
+#      console.log cnt
+#      console.log workList.length
       if cnt == workList.length
         endTime = Date.now()
-        console.log common.getCasperJsExec() + ' COMPLETED for all criteria in : ' + ((endTime - startTime) / 1000).toFixed(3).toString() + ' seconds'
+        doneMsg = common.getCasperJsExec() + ' COMPLETED for all criteria in : ' + ((endTime - startTime) / 1000).toFixed(3).toString() + ' seconds'
+        growlMsg(doneMsg)
+        console.log doneMsg
         cb()
 
     setupWork('phone',callback) if common.resolutions['phone'].active
@@ -63,7 +73,6 @@ module.exports = (grunt) ->
     cmdProcess.on "exit", (code) ->
       msg = 'COMPLETED\nscenario: ' + args[1]  + '\ndeviceType: ' + args[5] + '\nviewport:  ' + args[3] + ' x ' + args[4] + '\n-----------------------------------\n'
       grunt.log.write msg
-      growlMsg(msg)
       callback(null, "")
 
   growlMsg = (msg) ->
