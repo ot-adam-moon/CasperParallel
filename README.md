@@ -31,7 +31,8 @@ Setup
 
 Create you own Scenarios
 ========================
- Create a new javascript file with a title describing a step in your scenario
+ Create a new scenario file and save it in the `scenarios` directory
+ The scenario skeleton should look like this:
  
     exports.run = function (casper, scenario, step, c, p, t) {
        // casper js scripts go here
