@@ -4,6 +4,7 @@ exports.run = function (casper, scenario,step, c, p, t, x) {
 
     casper.waitForSelector(c.selectors.googleSearchResultLink,
         function () {
+            casper.mouse.move(c.selectors.googleSearchResultLink);
             casper.click(c.selectors.googleSearchResultLink);
             casper.then(function () {
                 c.logWithTime(scenario, step, ' about to call passed');

@@ -6,6 +6,8 @@ module.exports = (grunt) ->
   common = new config()
   workList = []
   argScenario = grunt.option('scenario')
+  argDeviceType = grunt.option('deviceType')
+  argUserAgentType = grunt.option('userAgent')
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
 
@@ -28,15 +30,22 @@ module.exports = (grunt) ->
     if common.criteriaList[scenario].forDeviceType is deviceType or !common.criteriaList[scenario].forDeviceType
       i = 0
       while i < common.resolutions[deviceType].list.length
-       for userAgentType of common.userAgents[deviceType]
-         args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0], common.resolutions[deviceType].list[i][1]]
-
-         # pass type of device or browser
-         args.push userAgentType
-         # pass actual userAgent string
-         args.push  common.userAgents[deviceType][userAgentType]
-         workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
-       i++
+        if argUserAgentType
+          args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0], common.resolutions[deviceType].list[i][1]]
+          # pass type of device or browser
+          args.push argUserAgentType
+          # pass actual userAgent string
+          args.push  common.userAgents[deviceType][argUserAgentType]
+          workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
+        else
+         for userAgentType of common.userAgents[deviceType]
+           args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0], common.resolutions[deviceType].list[i][1]]
+           # pass type of device or browser
+           args.push userAgentType
+           # pass actual userAgent string
+           args.push  common.userAgents[deviceType][userAgentType]
+           workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
+        i++
 
 
   run = (cb) ->
@@ -53,9 +62,13 @@ module.exports = (grunt) ->
         console.log doneMsg
         cb()
 
-    setupWork('phone',callback) if common.resolutions['phone'].active
-    setupWork('tablet',callback) if common.resolutions.tablet.active
-    setupWork('desktop',callback) if common.resolutions.desktop.active
+    if argDeviceType
+      setupWork(argDeviceType,callback) if common.resolutions[argDeviceType].active
+    else
+      setupWork('phone',callback) if common.resolutions['phone'].active
+      setupWork('tablet',callback) if common.resolutions.tablet.active
+      setupWork('desktop',callback) if common.resolutions.desktop.active
+
 
     async.parallel workList,
       callback

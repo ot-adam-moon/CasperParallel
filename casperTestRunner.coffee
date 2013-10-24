@@ -60,7 +60,7 @@ currentStep = 0
 runSteps = (c) ->
   if steps[currentStep]
     step = steps[currentStep]
-    stepToRun = require("./scenarios/" + step + '.js')
+    stepToRun = require("./scenarios/" + step + common.scenarioScriptExt)
     common.logWithTime(scenario, currentStep + 1, ' run');
     stepToRun.run c, scenario, step, common, pass, fail, x
     currentStep++
