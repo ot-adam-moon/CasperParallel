@@ -6,7 +6,7 @@ casper = require("casper").create
   verbose: common.verbose
   logLevel: common.logThreshold
   waitTimeout: common.timeout
-url = common.url
+url = common.proj.url
 scenario = casper.cli.get(0)
 deviceType = casper.cli.get(1)
 width = casper.cli.get(2)

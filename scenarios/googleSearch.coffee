@@ -7,8 +7,6 @@ exports.run = (casper, scenario, step, c, p, t) ->
       q: "bleacher report"
     , true
     casper.then ->
-      console.log "EXISTS bleacher report LINK: " + casper.visible(c.selectors.googleSearchResultLink)
-
       casper.waitUntilVisible c.selectors.googleSearchResultLink, (->
         c.logWithTime scenario, step, " about to call passed"
         p casper, step

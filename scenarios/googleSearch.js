@@ -5,7 +5,6 @@ exports.run = function (casper, scenario, step, c, p, t) {
         function () {
             casper.fill(c.selectors.googleSearchForm, { q: "bleacher report" }, true);
             casper.then(function () {
-                console.log('EXISTS bleacher report LINK: ' + casper.visible(c.selectors.googleSearchResultLink));
                 casper.waitUntilVisible(c.selectors.googleSearchResultLink, function () {
                         c.logWithTime(scenario, step, ' about to call passed');
                         p(casper, step);

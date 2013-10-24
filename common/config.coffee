@@ -1,8 +1,7 @@
 exports.init = ->
   config = ->
 
-#   config properties
-    @url = 'http://google.com'
+#   casper runner config properties
     @verbose = true
     @logThreshold = 'error'
     @scenarioScriptExt = '.coffee'
@@ -15,6 +14,7 @@ exports.init = ->
     self = @
 
 #    set criteria list
+    @proj =  (require('./configProject')).get()
     @criteriaList =  (require('./criteria')).get()
 #    set selectors
     @selectors =  (require('./selectors')).get()
