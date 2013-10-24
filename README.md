@@ -27,12 +27,20 @@ Setup
 
 Create you own Scenarios
 ========================
- Create a new scenario file and save it in the `scenarios` directory
+ Create a new scenario step .js or .coffee file and save it in the `scenarios` directory.
  The scenario skeleton should look like this:
  
+  `javascript`
+  
     exports.run = function (casper, scenario, step, c, p, t) {
        // casper js scripts go here
     };
+    
+  `coffeescript`
+  
+    exports.run = (casper, scenario, step, c, p, t) ->
+
+    # casper js scripts go here
  
  
  Example scenario step: googleSearch.js
