@@ -27,7 +27,6 @@ Setup
 
 Customize for your project
 ==========================
-
 1: Set your url
  in ./common/configProj.coffee
  
@@ -37,8 +36,8 @@ Customize for your project
       c.url = 'http://google.com'
       c
       
-Create you own Scenarios
-========================
+2: Create your own Scenarios Steps
+
  Create a new scenario step .js or .coffee file and save it in the `scenarios` directory.
  The scenario skeleton should look like this:
  
@@ -102,9 +101,29 @@ Create you own Scenarios
       ), ->
         c.logWithTime scenario, step, " about to call failed"
         t casper, step
+3: Configure your acceptance criteria in ./common/criteria.coffee
+   
+    exports.get = ->
+    # common criteria list
+    criteriaList = {}
+    criteriaList.googleSearch =
+      steps: ["googleSearch"]
+    
+    criteriaList.browseToSearchResult =
+      steps: ['googleSearch', 'clickSearchResultLink']
+    
+    criteriaList.navigateToBleachReportNavLink  =
+        forDeviceType: "phone"
+        steps: ['browseToSearchResult','clickNavToggleBtn']
+    
+    criteriaList.navigateToWWEHome  =
+        forDeviceType: "phone"
+        steps: ['navigateToBleachReportNavLink', 'clickWWENavLink','clickWWESubNavLink']
+    
+    criteriaList
 
 
-
+ 
  
 Command List
 ------------
