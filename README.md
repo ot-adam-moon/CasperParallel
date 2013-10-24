@@ -12,7 +12,7 @@ Features
 =======
   * configurable list of User Agents to use for each scenario
   * configurable list of Viewports to use for each scenario
-  * nestable predefined scenarios to reduce verbose repeated steps
+  * build modular scenario steps the can be reused for multiple scenarios
   * each combination of User Agent, Viewport, and Scenario run in parallel reducing time to complete suite
   * ability to run specified scenario, viewport, and user agent with command line arguments
   * separate User Agents and Viewports by device type phone, tablet and desktop
