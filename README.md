@@ -3,16 +3,12 @@ casperallel
 
 Using Node.js async module to Run [casperjs](http://casperjs.org/) Scripts in parallel.
 
-Motivation
-==========
-  *  be able to run any UI Automation Scripts against a configurable list of Viewports and UserAgents
-  *  be able to run entire suite of UI Automation Scripts in parallel
 
 Features
 =======
   * configurable list of User Agents to use for each scenario
   * configurable list of Viewports to use for each scenario
-  * nestable predefined scenarios to reduce verbose repeated steps
+  * build modular scenario steps the can be reused for multiple scenarios
   * each combination of User Agent, Viewport, and Scenario run in parallel reducing time to complete suite
   * ability to run specified scenario, viewport, and user agent with command line arguments
   * separate User Agents and Viewports by device type phone, tablet and desktop
@@ -29,14 +25,53 @@ Setup
 * Add batchbin dir to PATH Environment Variable *Ex: E:\casperjs\batchbin;
 * `grunt`
 
+Create you own Scenarios
+========================
+ Create a new scenario step .js or .coffee file and save it in the `scenarios` directory.
+ The scenario skeleton should look like this:
+ 
+  `javascript`
+  
+    exports.run = function (casper, scenario, step, c, p, t) {
+       // casper js scripts go here
+    };
+    
+  `coffeescript`
+  
+    exports.run = (casper, scenario, step, c, p, t) ->
+
+    # casper js scripts go here
+ 
+ 
+ Example scenario step: googleSearch.js
+ 
+    exports.run = function (casper, scenario, step, c, p, t) {
+        // google search for 'bleacher report'
+        c.logWithTime(scenario, step, ' inside run');
+        casper.waitForSelector(c.selectors.googleSearchForm,
+            function () {
+                casper.fill(c.selectors.googleSearchForm, { q: "bleacher report" }, true);
+                casper.then(function () {
+                    c.logWithTime(scenario, step, ' about to call passed');
+                    p(casper, step);
+                });
+            },
+            function () {
+                c.logWithTime(scenario, step, ' about to call failed');
+                t(casper, step);
+            });
+    };
+ 
+
+
  
 Command List
 ------------
 
 | grunt command | what it does  |
 | ------------- |:-------------:|
-| `grunt` | `run all scenarios for all device types and viewports in parallel` |
-| `grunt --scenario navigateToWWEHome` | `run only scenario `navigateToWWEHome` for all viewport and useragent combinations in parallel` |
+| `grunt` |`run all scenarios for all device types and viewports in parallel` |
+| `grunt --scenario navigateToWWEHome` |`run only scenario navigateToWWEHome for all viewports and useragent combinations in parallel` |
 
 
 
