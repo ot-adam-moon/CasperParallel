@@ -44,24 +44,53 @@ Create you own Scenarios
  
  
  Example scenario step: googleSearch.js
- 
+ `javascript`
+  
     exports.run = function (casper, scenario, step, c, p, t) {
-        // google search for 'bleacher report'
-        c.logWithTime(scenario, step, ' inside run');
-        casper.waitForSelector(c.selectors.googleSearchForm,
-            function () {
-                casper.fill(c.selectors.googleSearchForm, { q: "bleacher report" }, true);
-                casper.then(function () {
-                    c.logWithTime(scenario, step, ' about to call passed');
-                    p(casper, step);
-                });
-            },
-            function () {
-                c.logWithTime(scenario, step, ' about to call failed');
-                t(casper, step);
+    // google search for 'bleacher report'
+    c.logWithTime(scenario, step, ' inside run');
+    casper.waitForSelector(c.selectors.googleSearchForm,
+        function () {
+            casper.fill(c.selectors.googleSearchForm, { q: "bleacher report" }, true);
+            casper.then(function () {
+                casper.waitUntilVisible(c.selectors.googleSearchResultLink, function () {
+                        c.logWithTime(scenario, step, ' about to call passed');
+                        p(casper, step);
+                    },
+                    function () {
+                        c.logWithTime(scenario, step, ' about to call failed');
+                        t(casper, step);
+                    });
             });
+        },
+        function () {
+            c.logWithTime(scenario, step, ' about to call failed');
+            t(casper, step);
+        });
     };
+    
+  `coffeescript`
  
+     exports.run = (casper, scenario, step, c, p, t) ->
+  
+      # google search for 'bleacher report'
+      c.logWithTime scenario, step, " inside run"
+      casper.waitForSelector c.selectors.googleSearchForm, (->
+        casper.fill c.selectors.googleSearchForm,
+          q: "bleacher report"
+        , true
+        casper.then ->
+          casper.waitUntilVisible c.selectors.googleSearchResultLink, (->
+            c.logWithTime scenario, step, " about to call passed"
+            p casper, step
+          ), ->
+            c.logWithTime scenario, step, " about to call failed"
+            t casper, step
+    
+      ), ->
+        c.logWithTime scenario, step, " about to call failed"
+        t casper, step
+
 
 
  
@@ -70,8 +99,10 @@ Command List
 
 | grunt command | what it does  |
 | ------------- |:-------------:|
-| `grunt` |`run all scenarios for all device types and viewports in parallel` |
-| `grunt --scenario navigateToWWEHome` |`run only scenario navigateToWWEHome for all viewports and useragent combinations in parallel` |
+| `grunt`|`run all scenarios for all device types and viewports in parallel`|
+| `grunt --scenario navigateToWWEHome`|`run specified scenario for all viewports and useragent combinations`|
+| `grunt --scenario googleSearch --deviceType phone`|`run specified scenario for all phone viewports and useragents`|
+| `grunt --scenario googleSearch --userAgentType iPhoneSafari`|`run specified scenario for userAgent specified`|
 
 
 
