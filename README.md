@@ -92,6 +92,7 @@ Customize for your project
         });
     };
     
+  Example scenario step: googleSearch.coffee
   `coffeescript`
  
      exports.run = (casper, scenario, step, c, p, t) ->
