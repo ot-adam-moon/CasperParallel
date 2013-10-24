@@ -25,6 +25,18 @@ Setup
 * Add batchbin dir to PATH Environment Variable *Ex: E:\casperjs\batchbin;
 * `grunt`
 
+Customize for your project
+==========================
+
+1: Set your url
+ in ./common/configProj.coffee
+ 
+    # common project specific configurations
+    exports.get = ->
+      c = {}
+      c.url = 'http://google.com'
+      c
+      
 Create you own Scenarios
 ========================
  Create a new scenario step .js or .coffee file and save it in the `scenarios` directory.
@@ -100,7 +112,7 @@ Command List
 | grunt command | what it does  |
 | ------------- |:-------------:|
 | `grunt`|`run all scenarios for all device types and viewports in parallel`|
-| `grunt --scenario navigateToWWEHome`|`run specified scenario for all viewports and useragent combinations`|
+| `grunt --scenario navigateToWWEHome`|`run specified scenario for all viewports and useragents`|
 | `grunt --scenario googleSearch --deviceType phone`|`run specified scenario for all phone viewports and useragents`|
 | `grunt --scenario googleSearch --userAgentType iPhoneSafari`|`run specified scenario for userAgent specified`|
 
