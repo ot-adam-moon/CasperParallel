@@ -29,18 +29,14 @@ Setup
 * Add batchbin dir to PATH Environment Variable *Ex: E:\casperjs\batchbin;
 * `grunt`
 
-Run all casper js ui acceptance criteria scenarios in parallel
------------------------------------------------------------------------------
-
- grunt
  
 Command List
 ------------
 
 | grunt command | what it does  |
 | ------------- |:-------------:|
-| `grunt` | `clean RESULT folders`, `run all scenarios for all device types and viewports in parallel` |
-| `grunt default` | `git pull upstream master` |
+| `grunt` | `run all scenarios for all device types and viewports in parallel` |
+| `grunt --scenario navigateToWWEHome` | `run only scenario `navigateToWWEHome` for all viewport and useragent combinations in parallel` |
 
 
 
