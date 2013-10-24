@@ -99,8 +99,10 @@ Command List
 
 | grunt command | what it does  |
 | ------------- |:-------------:|
-| `grunt` |`run all scenarios for all device types and viewports in parallel` |
-| `grunt --scenario navigateToWWEHome` |`run only scenario navigateToWWEHome for all viewports and useragent combinations in parallel` |
+| `grunt`|`run all scenarios for all device types and viewports in parallel`|
+| `grunt --scenario navigateToWWEHome`|`run specified scenario for all viewports and useragent combinations`|
+| `grunt --scenario googleSearch --deviceType phone`|`run specified scenario for all phone viewports and useragent combinations`|
+| `grunt --scenario googleSearch --userAgentType iPhoneSafari`|`run specified scenario for all phone viewports and useragent combinations`|
 
 
 
