@@ -111,6 +111,19 @@ Customize for your project
       ), ->
         c.logWithTime scenario, step, " about to call failed"
         t casper, step
+        
+ Use ./common/selectors.coffee to save common css3 or xpath selectors in one place
+ They then can be referenced in your custom scenario step with `c.selectors.selectorYouCreated`
+ 
+     exports.get = ->
+       s = {}
+       s.googleSearchForm = 'form[action="/search"]'
+       s.googleSearchResultLink = 'div#search a:first-child'
+       s.bleacherReportNavToggle = "div#nav_handle a"
+       s.globalNav_WWE_link = 'ul.nav_list li[data-id="wwe"] > a'
+       s.subNav_WWE_link = '#sub-nav-region > ul > li:first-child > a'
+       s
+      
 3: Configure your acceptance criteria in ./common/criteria.coffee
    
     exports.get = ->
