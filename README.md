@@ -115,7 +115,7 @@ Customize for your project
         c.logWithTime scenario, step, " about to call failed"
         t casper, step
         
- Use ./common/selectors.coffee to save common css3 or xpath selectors in one place.
+ Use [./common/selectors.coffee](https://github.com/ot-adam-moon/CasperParallel/blob/master/common/selectors.coffee) to save common css3 or xpath selectors in one place.
  They then can be referenced in your custom scenario step with `c.selectors.selectorYouCreated`
  
     exports.get = ->
