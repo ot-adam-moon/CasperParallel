@@ -6,6 +6,7 @@
     "grunt": "latest",
     "async" : "latest",
     "lodash" : "latest",
+    "pdfkit" : "latest",
     "grunt-contrib-clean": "latest"
   },
     "scripts": {

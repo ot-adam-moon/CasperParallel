@@ -2,15 +2,15 @@ exports.init = ->
   config = ->
 
 #   casper runner config properties
-    @verbose = true
+    @verbose = false
     @logThreshold = 'error'
     @scenarioScriptExt = '.coffee'
     @timeout = 5000
     @dirSuccess = "RESULTS_SUCCESS/"
     @dirFailure = "RESULTS_FAILURE/"
     @includeFullPage = true
-    @dirScreenshotViewPort = '{scenario}/{deviceType}/{userAgentType}/{width}-{height}-STEP-{step}.png'
-    @dirScreenshotFullPage = '{scenario}/{deviceType}/{userAgentType}/FULLPAGE-{width}-{height}-STEP-{step}.png'
+    @dirScreenshotViewPort = '{scenario}/{deviceType}/{userAgentType}/{width}x{height}/STEP-{step}.png'
+    @dirScreenshotFullPage = '{scenario}/{deviceType}/{userAgentType}/FULLPAGE/{width}x{height}/STEP-{step}.png'
     self = @
 
 #    set criteria list
@@ -36,9 +36,10 @@ exports.init = ->
       os = require('os')
       if os.platform() is 'win32' then "casperjs.bat" else "casperjs"
     @logWithTime = (scenario, step, action) ->
-      timeStamp = new Date()
-      console.log  'SCENARIO: ' + scenario + ' -> ' + timeStamp + " : " + action + ' in the step ' + step
-      timeStamp
+      if self.verbose
+        timeStamp = new Date()
+        console.log  'SCENARIO: ' + scenario + ' -> ' + timeStamp + " : " + action + ' in the step ' + step
+        timeStamp
 
     @logTimeToComplete = (scenario, step, start) ->
       console.log 'completed ' + step + ' step of  ' + scenario + ' in ' + ((new Date() - start) / 1000).toFixed(3).toString() + ' secs'
