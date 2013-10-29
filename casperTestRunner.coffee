@@ -14,6 +14,10 @@ height = casper.cli.get(3)
 userAgentType = casper.cli.get(4)
 userAgentString = casper.cli.get(5)
 steps = []
+successCount = 0
+failedCount = 0
+successImgPath = ''
+failureImgPath = ''
 
 buildSteps = (scenario) ->
   for st in common.criteriaList[scenario].steps
@@ -44,6 +48,7 @@ pass = (c, step)->
   if common.includeFullPage
     c.captureSelector common.dirSuccess + FPfilename.replace(/{step}/g, currentStep + '-' + step), 'body'
   common.logWithTime(scenario, step, ' snapshot taken after pass')
+  successCount = successCount + 1 
   runSteps c
 
 fail = (c, step) ->
@@ -54,6 +59,9 @@ fail = (c, step) ->
     height: height
   c.captureSelector common.dirFailure + FPfilename.replace(/\{step\}/, currentStep + '-' + step), 'body'
   common.logWithTime(scenario, step, ' snapshot taken after failure');
+  failedCount = failedCount + 1
+  exitCode = successCount*10 + failedCount
+  c.exit(exitCode)
 
 currentStep = 0
 
@@ -76,4 +84,5 @@ casper.then ->
   runSteps casper
 
 casper.run ->
-  @echo("Finished captures for " + url).exit()
+  exitCode = successCount*10 + failedCount
+  @echo("Exiting with exit code " + exitCode).exit(exitCode)

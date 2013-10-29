@@ -4,8 +4,9 @@ exports.run = (casper, scenario, step, c, p, t, x) ->
     casper.mouse.move c.selectors.googleSearchResultLink
     casper.click c.selectors.googleSearchResultLink
     casper.then ->
-      c.logWithTime scenario, step, " about to call passed"
-      p casper, step
+      casper.waitForUrl /(.*)(report.com)/, ->
+        c.logWithTime scenario, step, " about to call passed"
+        p(casper, step)
 
   ), ->
     c.logWithTime scenario, step, " about to call timeout"
