@@ -5,6 +5,7 @@ exports.init = ->
     @verbose = false
     @logThreshold = 'error'
     @scenarioScriptExt = '.coffee'
+    @generatePdf = true
     @timeout = 5000
     @dirSuccess = "RESULTS_SUCCESS/"
     @dirFailure = "RESULTS_FAILURE/"

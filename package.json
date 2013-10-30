@@ -7,6 +7,7 @@
     "async" : "latest",
     "lodash" : "latest",
     "pdfkit" : "latest",
+    "colors" : "latest",
     "grunt-contrib-clean": "latest"
   },
     "scripts": {
