@@ -1,17 +1,23 @@
 exports.init = ->
   config = ->
-
 #   casper runner config properties
-    @verbose = false
+    @browserEngine = 'phantomjs'
+#    @browserEngine = 'slimerjs'
+#    @verbose = false
+    @verbose = true
+#    @logThreshold = 'debug'
     @logThreshold = 'error'
     @scenarioScriptExt = '.coffee'
     @generatePdf = true
     @timeout = 5000
     @dirSuccess = "RESULTS_SUCCESS/"
     @dirFailure = "RESULTS_FAILURE/"
+    @pdfResults = "RESULTS/"
     @includeFullPage = true
     @dirScreenshotViewPort = '{scenario}/{deviceType}/{userAgentType}/{width}x{height}/STEP-{step}.png'
     @dirScreenshotFullPage = '{scenario}/{deviceType}/{userAgentType}/FULLPAGE/{width}x{height}/STEP-{step}.png'
+    @passedColor = "#00FF00"
+    @failedColor="#8A0808"
     self = @
 
 #    set criteria list
@@ -20,7 +26,7 @@ exports.init = ->
 #    set selectors
     @selectors =  (require('./selectors')).get()
 #    set resolutions
-    @resolutions =  (require('./resolutions')).get()
+    @viewPorts =  (require('./viewPorts')).get()
 #    set userAgents
     @userAgents =  (require('./userAgents')).get()
 #    common helper methods
@@ -34,8 +40,7 @@ exports.init = ->
       path
 
     @getCasperJsExec = () ->
-      os = require('os')
-      if os.platform() is 'win32' then "casperjs.bat" else "casperjs"
+      "casperjs"
     @logWithTime = (scenario, step, action) ->
       if self.verbose
         timeStamp = new Date()

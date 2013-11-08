@@ -12,7 +12,6 @@ deviceType = casper.cli.get(1)
 width = casper.cli.get(2)
 height = casper.cli.get(3)
 userAgentType = casper.cli.get(4)
-userAgentString = casper.cli.get(5)
 steps = []
 successCount = 0
 failedCount = 0
@@ -32,7 +31,7 @@ ACfilename = common.setupScreenShotPath scenario, deviceType, userAgentType, wid
 FPfilename = common.setupScreenShotPath scenario, deviceType, userAgentType, width, height, true
 
 #set the userAgent from argument passed in
-casper.userAgent userAgentString  if userAgentString
+casper.userAgent common.userAgents[deviceType][userAgentType]
 
 casper.show = (selector) ->
   @evaluate ((selector) ->
@@ -47,7 +46,8 @@ pass = (c, step)->
     height: height
   if common.includeFullPage
     c.captureSelector common.dirSuccess + FPfilename.replace(/{step}/g, currentStep + '-' + step), 'body'
-  common.logWithTime(scenario, step, ' snapshot taken after pass')
+
+  common.logWithTime scenario, step, ' snapshot taken after pass'
   successCount = successCount + 1 
   runSteps c
 
@@ -58,10 +58,14 @@ fail = (c, step) ->
     width: width
     height: height
   c.captureSelector common.dirFailure + FPfilename.replace(/\{step\}/, currentStep + '-' + step), 'body'
-  common.logWithTime(scenario, step, ' snapshot taken after failure');
+
+  common.logWithTime scenario, step, ' snapshot taken after failure'
   failedCount = failedCount + 1
+
+exit = () ->
   exitCode = successCount*10 + failedCount
-  c.exit(exitCode)
+#  c.echo("Exiting with exit code " + exitCode)
+  casper.exit exitCode
 
 currentStep = 0
 
@@ -69,11 +73,9 @@ runSteps = (c) ->
   if steps[currentStep]
     step = steps[currentStep]
     stepToRun = require("./scenarios/" + step + common.scenarioScriptExt)
-    common.logWithTime(scenario, currentStep + 1, ' run');
+    common.logWithTime(scenario, currentStep + 1, ' run')
     stepToRun.run c, scenario, step, common, pass, fail, x
     currentStep++
-  else
-    common.logWithTime('Run All Steps', 'Done', 'Exit()');
 
 casper.start url
 
@@ -84,5 +86,4 @@ casper.then ->
   runSteps casper
 
 casper.run ->
-  exitCode = successCount*10 + failedCount
-  @echo("Exiting with exit code " + exitCode).exit(exitCode)
+  exit()

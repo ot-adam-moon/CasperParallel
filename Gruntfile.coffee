@@ -15,12 +15,13 @@ module.exports = (grunt) ->
   argUserAgentType = grunt.option('userAgent')
   successCount = 0
   failedCount = 0
+  commandTxt = 'casperjs.bat casperTestRunner.coffee '
   grunt.loadNpmTasks 'grunt-contrib-clean'
-
 
   # Configure Grunt
   grunt.initConfig
-    clean: [common.dirSuccess, common.dirFailure, 'RESULTS']
+    clean: {options: {force: true}, all: [common.dirSuccess, common.dirFailure]}
+
   grunt.registerTask 'testAcceptanceCriteria', 'RUN ALL CRITERIA', () ->
     run this.async()
 
@@ -36,24 +37,23 @@ module.exports = (grunt) ->
   setupWorkForScenario = (scenario, deviceType, cb) ->
     if common.criteriaList[scenario].forDeviceType is deviceType or !common.criteriaList[scenario].forDeviceType
       i = 0
-      while i < common.resolutions[deviceType].list.length
+      while i < common.viewPorts[deviceType].list.length
         if argUserAgentType
-          args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0],
-                  common.resolutions[deviceType].list[i][1]]
+          args = ['casperTestRunner.coffee', scenario, deviceType, common.viewPorts[deviceType].list[i][0],
+                  common.viewPorts[deviceType].list[i][1]]
           # pass type of device or browser
           args.push argUserAgentType
           # pass actual userAgent string
-          args.push common.userAgents[deviceType][argUserAgentType]
-          args.push(new PDF)
+          args.push '--engine=' + common.browserEngine
           workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
         else
           for userAgentType of common.userAgents[deviceType]
-            args = ['casperTestRunner.coffee', scenario, deviceType, common.resolutions[deviceType].list[i][0],
-                    common.resolutions[deviceType].list[i][1]]
+            args = ['casperTestRunner.coffee', scenario, deviceType, common.viewPorts[deviceType].list[i][0],
+                    common.viewPorts[deviceType].list[i][1]]
             # pass type of device or browser
             args.push userAgentType
             # pass actual userAgent string
-            args.push common.userAgents[deviceType][userAgentType]
+            args.push '--engine=' + common.browserEngine
             workList.push async.apply(cmd, common.getCasperJsExec(), args, cb)
         i++
 
@@ -63,61 +63,59 @@ module.exports = (grunt) ->
     startTime = Date.now()
     callback = (err, results) ->
       cnt = cnt + 1
-      #      console.log cnt
-      #      console.log workList.length
       if cnt == workList.length
         endTime = Date.now()
-        successMsg = 'PASSED: ' + successCount
+        successMsg = 'PASSED STEPS: ' + successCount
         failedMsg = ''
         if failedCount > 0
-          failedMsg = "FAILED: " + failedCount
+          failedMsg = "FAILED STEPS: " + failedCount
         doneMsg = common.getCasperJsExec() + ' COMPLETED for all criteria in : ' + ((endTime - startTime) / 1000).toFixed(3).toString() + ' seconds'
-        growlMsg(doneMsg)
-        console.log doneMsg
+        growlMsg(doneMsg  .cyan)
+        console.log doneMsg .cyan
         console.log successMsg .green
         if failedMsg.length > 0
           console.log failedMsg .red
         cb()
 
-    fs.mkdirSync('RESULTS')
     if argDeviceType
-      setupWork(argDeviceType, callback) if common.resolutions[argDeviceType].active
+      setupWork(argDeviceType, callback) if common.viewPorts[argDeviceType].active
     else
-      setupWork('phone', callback) if common.resolutions['phone'].active
-      setupWork('tablet', callback) if common.resolutions.tablet.active
-      setupWork('desktop', callback) if common.resolutions.desktop.active
+      setupWork('phone', callback) if common.viewPorts['phone'].active
+      setupWork('tablet', callback) if common.viewPorts.tablet.active
+      setupWork('desktop', callback) if common.viewPorts.desktop.active
 
 
     async.parallel workList,
       callback
 
   appendPdfForPath = (path, doc, failed, cb) ->
-    doc.fontSize(25).fillColor('#4a4a4a')
+    doc.fontSize(18)
     files = fs.readdirSync path
     files = _.sortBy files
     text = ''
-
-    if failed
-      text = "Failed Step: "
-    else
-      text = "Step: "
-
+    stepDesc
+    stepNum
     j = 0
-    console.log doc.page.width
     imgPath = ''
-    isPng = false
+    headerHeight = 0
     while j < files.length
-      files[j]
+      stepNum =  files[j].replace(/(STEP-)(.*)-(.*)(\.png)/,'$2')
+      stepDesc =  files[j].replace(/(STEP-)(.*)-(.*)(\.png)/,'$3')
       imgPath = path + files[j]
-      text = text + (j + 1)
+      text =   "#"+ stepNum + ': ' + stepDesc
 
-      if j > 0 or failed
+      doc.addPage()
 
-        doc.addPage().highlight(0, 0, doc.page.width, 30, text, {color: '#000' })
-        .image(imgPath, 0, 30)
+      doc.text(text,20,headerHeight + 5)
+        .highlight(0, 0, doc.page.width+5, 25)
+        .circle(10,11+headerHeight, 7)
+        .lineWidth(1)
+      if failed
+         doc.fillAndStroke("#FE2E2E", common.failedColor)
       else
-        doc.highlight(0, 0, doc.page.width, 30, text, {color: '#000' })
-        doc.image(imgPath, 0, 30)
+         doc.fillAndStroke("#00FF00", "green")
+      doc.rect(0,headerHeight + 22, doc.page.width, 3).fillAndStroke("black", "#000000")
+      doc.image(imgPath, 0, headerHeight + 25 )
       j++
 
     cb()
@@ -134,31 +132,52 @@ module.exports = (grunt) ->
       grunt.log.write msg
 
     cmdProcess.on "exit", (code) ->
-      msg = 'COMPLETED\nscenario: ' + args[1] + '\ndeviceType: ' + args[5] + '\nviewport:  ' + args[3] + ' x ' + args[4] + '\n-----------------------------------\n'
+      console.log code
+      msg = '\ndeviceType: ' + args[5] + '\nviewport:  ' + args[3] + ' x ' + args[4] + '\n-----------------------------------\n'
       path = args[1] + '/' + args[2] + '/' + args[5] + '/' +  args[3] + 'x' + args[4] + '/'
       sPath = common.dirSuccess + path
       fPath = common.dirFailure + path
-      pdfResultDir = 'RESULTS/'  + args[1] + '-' + args[2] + '-' + args[5] + '-' + args[3] + '-' + args[4] + '.pdf'
-
+      pdfResult =  args[1] + '-' + args[2] + '-' + args[5] + '-' + args[3] + '-' + args[4] + '.pdf'
       hadFailure = code % 10 > 0
-      
+      scenarioTitle = args[1] + '\n'
+
+
       successCount = successCount + Math.floor( code / 10 )
       if common.generatePdf
         doc = new PDF
           size:
-            [args[3] , args[4]+30]
+            [args[3] , args[4]+25]
 
+        if common.criteriaList[args[1]].bdd
+          scenarioTitle = scenarioTitle +
+            '\n\nGIVEN:\n--> ' + common.criteriaList[args[1]].bdd.GIVEN +
+            '\nWHEN:\n--> ' + common.criteriaList[args[1]].bdd.WHEN +
+            '\nTHEN:\n--> ' + common.criteriaList[args[1]].bdd.THEN
+
+        if hadFailure
+          doc.fillColor(common.failedColor)
+        else
+          doc.fillColor(common.passedColor)
+
+        doc.fontSize(18)
+        .text(scenarioTitle,Math.floor(doc.page.width/10),Math.floor(doc.page.height/10),{width: Math.floor(doc.page.width*.8), align: 'left'})
+        .highlight(0,0, doc.page.width, doc.page.height, {color: '#cccccc'})
         appendPdfForPath(sPath, doc, false, () ->
           if hadFailure
             failedCount = failedCount + 1
             appendPdfForPath fPath, doc, true,() ->
-              doc.write pdfResultDir
+              doc.write fPath + pdfResult
           else
-            doc.write pdfResultDir
+            doc.write sPath + pdfResult
         )
-
-      grunt.log.write msg
+      if hadFailure
+        msg = 'COMPLETED ' + args[1] + ' but FAILED on Step ' + common.criteriaList[args[1]].steps[Math.floor( code / 10 )] + msg
+        console.log msg .red
+      else
+        msg =  'COMPLETED All ' + common.criteriaList[args[1]].steps.length + ' Steps for ' + args[1] + ' Successfully '  + msg
+        console.log msg .green
       callback(null, "")
+
   growlMsg = (msg) ->
     unless typeof (growl) is "undefined"
       growl msg,
