@@ -154,14 +154,9 @@ module.exports = (grunt) ->
             '\nWHEN:\n--> ' + common.criteriaList[args[1]].bdd.WHEN +
             '\nTHEN:\n--> ' + common.criteriaList[args[1]].bdd.THEN
 
-        if hadFailure
-          doc.fillColor(common.failedColor)
-        else
-          doc.fillColor(common.passedColor)
-
         doc.fontSize(18)
-        .text(scenarioTitle,Math.floor(doc.page.width/10),Math.floor(doc.page.height/10),{width: Math.floor(doc.page.width*.8), align: 'left'})
-        .highlight(0,0, doc.page.width, doc.page.height, {color: '#cccccc'})
+        .text(scenarioTitle,Math.floor(doc.page.width/12),Math.floor(doc.page.height/12),{width: Math.floor(doc.page.width*.9), align: 'left'})
+
         appendPdfForPath(sPath, doc, false, () ->
           if hadFailure
             failedCount = failedCount + 1
